@@ -1,27 +1,34 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Globe, Instagram, Twitter, Facebook, Linkedin, Youtube,
+  Globe,
+  Instagram,
+  Twitter,
+  Facebook,
+  Linkedin,
+  Youtube,
 } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="py-12 md:py-16 bg-gradient-to-br from-[#000e1f] via-[#001e3c] to-[#001730] text-white shadow-inner">
-      <div className="container mx-auto px-6 py-14 md:py-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-          {/* Logo and Description */}
+    <footer className="bg-gray-900 text-white py-12">
+      <div className="container mx-auto px-4">
+        <div className="grid md:grid-cols-4 gap-8">
+          {/* Logo & Description */}
           <div>
-            <Link to="/" className="flex items-center mb-5 hover:brightness-110 transition">
-              <Globe className="h-8 w-8 text-white" />
-              <span className="ml-3 text-2xl font-extrabold tracking-wide text-white drop-shadow-lg">
-                EngageSphere
-              </span>
+            <Link
+              to="/"
+              className="flex items-center space-x-3 mb-4 hover:opacity-90"
+            >
+              <Globe className="w-8 h-8" />
+              <span className="text-xl font-bold">EngageSphere</span>
             </Link>
-            <p className="text-yellow-100 mb-6 leading-relaxed max-w-xs">
-              Your premier destination for authentic social media engagement and growth services.
+            <p className="text-gray-400 mb-6">
+              Your premier destination for authentic social media engagement and
+              growth services.
             </p>
             {/* Social Media Icons */}
-            <div className="flex space-x-6">
+            <div className="flex space-x-3">
               {[
                 { Icon: Instagram, color: '#C13584' },
                 { Icon: Twitter, color: '#1DA1F2' },
@@ -32,7 +39,7 @@ const Footer: React.FC = () => {
                 <a
                   key={i}
                   href="#"
-                  className="transition-colors drop-shadow-md"
+                  className="transition-colors"
                   style={{ color }}
                   aria-label="Social Media Link"
                 >
@@ -42,20 +49,24 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Our Services */}
+          {/* Services */}
           <div>
-            <h3 className="text-xl font-semibold mb-6 border-b border-yellow-400 pb-2 tracking-wider text-white">
-              Our Services
-            </h3>
-            <ul className="space-y-3 text-yellow-300">
+            <h4 className="font-semibold mb-4">Services</h4>
+            <ul className="space-y-2 text-gray-400">
               {[
-                'Youtube', 'Instagram', 'X', 'Threads',
-                'Telegram', 'LinkedIn', 'TikTok', 'Facebook',
+                'Youtube',
+                'Instagram',
+                'X',
+                'Threads',
+                'Telegram',
+                'LinkedIn',
+                'TikTok',
+                'Facebook',
               ].map((platform) => (
                 <li key={platform}>
                   <Link
                     to={`/services/${platform.toLowerCase()}`}
-                    className="hover:text-yellow-400 transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     {platform} Services
                   </Link>
@@ -64,49 +75,45 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Company Info */}
+          {/* Company */}
           <div>
-            <h3 className="text-xl font-semibold mb-6 border-b border-yellow-400 pb-2 tracking-wider text-white">
-              Company
-            </h3>
-            <ul className="space-y-3 text-yellow-300">
+            <h4 className="font-semibold mb-4">Company</h4>
+            <ul className="space-y-2 text-gray-400">
               <li>
-                <Link to="/about" className="hover:text-yellow-400 transition-colors">
+                <Link to="/about" className="hover:text-white transition-colors">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:text-yellow-400 transition-colors">
+                <Link to="/contact" className="hover:text-white transition-colors">
                   Contact Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/faq" className="hover:text-white transition-colors">
+                  FAQ
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Legal Info */}
+          {/* Legal */}
           <div>
-            <h3 className="text-xl font-semibold mb-6 border-b border-yellow-400 pb-2 tracking-wider text-white">
-              Legal
-            </h3>
-            <ul className="space-y-3 text-yellow-300">
+            <h4 className="font-semibold mb-4">Legal</h4>
+            <ul className="space-y-2 text-gray-400">
               <li>
-                <Link to="/terms" className="hover:text-yellow-400 transition-colors">
+                <Link to="/terms" className="hover:text-white transition-colors">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="hover:text-yellow-400 transition-colors">
+                <Link to="/privacy" className="hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/refund" className="hover:text-yellow-400 transition-colors">
+                <Link to="/refund" className="hover:text-white transition-colors">
                   Refund Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/faq" className="hover:text-yellow-400 transition-colors">
-                  FAQ Policy
                 </Link>
               </li>
             </ul>
@@ -114,18 +121,8 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Footer Bottom */}
-        <div className="border-t border-yellow-600 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center text-yellow-300 text-sm">
-          <p className="mb-4 md:mb-0 select-none">
-            &copy; {new Date().getFullYear()} EngageSphere. All rights reserved.
-          </p>
-          <div className="flex space-x-8">
-            <Link to="/terms" className="hover:text-yellow-400 transition-colors">
-              Terms of Service
-            </Link>
-            <Link to="/privacy" className="hover:text-yellow-400 transition-colors">
-              Privacy
-            </Link>
-          </div>
+        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+          <p>&copy; {new Date().getFullYear()} EngageSphere. All rights reserved.</p>
         </div>
       </div>
     </footer>

@@ -7,7 +7,7 @@ import PricingTier from '../components/PricingTier';
 import FAQ from '../components/FAQ';
 import { ArrowLeft, Twitter, MessagesSquare, Send, Linkedin, Facebook } from 'lucide-react';
 import { SiYoutube, SiInstagram } from 'react-icons/si';
-import { post } from '../api/axios';
+import { get, post } from '../api/axios';
 
 // Brand color configurations
 const brandColors: Record<string, any> = {
@@ -189,7 +189,7 @@ const ServiceDetail: React.FC = () => {
     const fetchPricing = async () => {
       setLoading(true);
       try {
-        const resp = await post<ServiceDataDynamic>('/service/getByname', { name: normalized });
+        const resp = await post<ServiceDataDynamic>('/plan/getByname', { name: normalized });
         setPricing(resp.pricing);
       } catch (err: any) {
         console.error('Error fetching pricing:', err);

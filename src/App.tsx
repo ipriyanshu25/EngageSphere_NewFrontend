@@ -7,7 +7,6 @@ import PrivateRoute from './admin/PrivateRoute';
 // Public Pages
 import Home from './pages/Home';
 import Auth from './pages/Auth';
-import LearnMore from './pages/LearnMore';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Terms from './pages/Terms';
@@ -22,6 +21,7 @@ import Unauthorized from './pages/Unauthorized';
 import Profile from './pages/Profile';
 import UpdateProfile from './pages/UpdateProfile';
 import ServiceDetail from './pages/ServiceDetail';
+import ServiceList from './pages/services';
 
 // Admin Pages
 import AdminAuthPage from './admin/login';
@@ -42,7 +42,6 @@ function App() {
           {/* Public Routes */}
           <Route index element={<Home />} />
           <Route path="login" element={<Auth />} />
-          <Route path="learn-more" element={<LearnMore />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
           <Route path="terms" element={<Terms />} />
@@ -73,6 +72,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ServiceDetail />
+              </ProtectedRoute>
+            }
+          />
+            <Route
+            path="services"
+            element={
+              <ProtectedRoute>
+                <ServiceList />
               </ProtectedRoute>
             }
           />
