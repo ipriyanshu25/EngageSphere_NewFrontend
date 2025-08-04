@@ -1,11 +1,12 @@
+// src/pages/Home.tsx
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from '../api/axios';
 import HeroSection from '../components/HeroSection';
 import SuccessStories from '../components/SuccessStories';
 import GlassContainer from '../components/GlassContainer';
+import slugify from 'slugify';
 import {
-  /* Hero / card icons */
   CheckCircle,
   Users,
   Shield,
@@ -14,7 +15,6 @@ import {
   Home as HomeIcon,
   ArrowRight,
   ArrowDown,
-  /* Footer icons */
   Globe,
   Instagram,
   Twitter,
@@ -22,6 +22,12 @@ import {
   Linkedin,
   Youtube,
 } from 'lucide-react';
+
+/**
+ * Home page – updated service‑card styling to match reference UI.
+ * A separate ServiceCard component is **not** used, per user request – the
+ * markup is embedded directly inside the services grid below.
+ */
 
 const StepArrow: React.FC = () => (
   <div className="flex md:mx-4 my-4 md:my-0">
@@ -40,11 +46,8 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get('/services/getAll', {
-          params: { page, limit }
-        });
-        const { data } = response.data;
-        setServices(data);
+        const response = await axios.get('/services/getAll', { params: { page, limit } });
+        setServices(response.data.data);
       } catch (err: any) {
         setError(err.response?.data?.error || err.message);
       } finally {
@@ -55,21 +58,9 @@ const Home: React.FC = () => {
   }, [page, limit]);
 
   const steps = [
-    {
-      icon: <HomeIcon className="h-10 w-10 text-green-500" />,
-      title: '1. Choose Your Service',
-      desc: 'Select the platform & growth pack that matches your goals.',
-    },
-    {
-      icon: <Shield className="h-10 w-10 text-blue-500" />,
-      title: '2. Secure Payment',
-      desc: 'Checkout with our safe gateway. No passwords required.',
-    },
-    {
-      icon: <Zap className="h-10 w-10 text-yellow-500" />,
-      title: '3. Watch Your Growth',
-      desc: 'Relax while we deliver real‑time results to your account.',
-    },
+    { icon: <HomeIcon className="h-10 w-10 text-green-500" />, title: '1. Choose Your Service', desc: 'Select the platform & growth pack that matches your goals.' },
+    { icon: <Shield className="h-10 w-10 text-blue-500" />, title: '2. Secure Payment', desc: 'Checkout with our safe gateway. No passwords required.' },
+    { icon: <Zap className="h-10 w-10 text-yellow-500" />, title: '3. Watch Your Growth', desc: 'Relax while we deliver real‑time results to your account.' },
   ];
 
   return (
@@ -78,16 +69,14 @@ const Home: React.FC = () => {
 
       {/* Services Section */}
       <section className="py-16 bg-gradient-to-tr from-white via-blue-50 to-blue-100 px-4">
-        <div className="container mx-auto max-w-6xl">
+        <div className="container mx-auto max-w-6xl ">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold text-blue-900 mb-2">Our Services</h2>
-            <p className="text-base md:text-lg text-blue-700">
-              Comprehensive engagement solutions for your social media handles
-            </p>
+            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-2">Our Services</h2>
+            <p className="text-base md:text-lg text-gray-700">Comprehensive engagement solutions for your social media handle</p>
           </div>
 
           {loading ? (
-            <p className="text-center text-blue-700">Loading services...</p>
+            <p className="text-center text-gray-700">Loading services...</p>
           ) : error ? (
             <p className="text-center text-red-500">Error: {error}</p>
           ) : (
@@ -95,45 +84,54 @@ const Home: React.FC = () => {
               {services.map((service: any) => (
                 <div
                   key={service.serviceId}
-                  className="group bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-3"
+                  className="flex flex-col items-center bg-white rounded-2xl border border-gray-200 shadow-sm p-8 w-full max-w-sm transition hover:shadow-md"
                 >
-                  <div className="flex flex-col items-center">
-                    <div className="w-20 h-20 mb-4 bg-blue-100 flex items-center justify-center rounded-full group-hover:bg-blue-200 transition-colors overflow-hidden">
-                      {service.logo ? (
-                        <img
-                          src={
-                            service.logo.startsWith('/9j')
-                              ? `data:image/jpeg;base64,${service.logo}`
-                              : `data:image/png;base64,${service.logo}`
-                          }
-                          alt={`${service.serviceHeading} logo`}
-                          className="object-contain w-full h-full"
-                        />
-                      ) : (
-                        <CheckCircle className={`h-10 w-10 ${service.iconColor || 'text-blue-600'}`} />
-                      )}
-                    </div>
-                    <h3 className="text-2xl md:text-3xl font-semibold text-blue-900 mb-2 text-center">
-                      {service.serviceHeading}
-                    </h3>
-                    <p className="text-lg text-blue-700 text-center mb-4">
-                      {service.serviceDescription}
-                    </p>
+                  {/* Logo */}
+                  <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4">
+                    {service.logo ? (
+                      <img
+                        src={
+                          service.logo.startsWith('/9j')
+                            ? `data:image/jpeg;base64,${service.logo}`
+                            : `data:image/png;base64,${service.logo}`
+                        }
+                        alt={`${service.serviceHeading} logo`}
+                        className="object-contain w-full h-full"
+                      />
+                    ) : (
+                      <CheckCircle className="h-10 w-10 text-gray-700" />
+                    )}
                   </div>
 
-                  <div className="space-y-3">
+                  {/* Heading and description */}
+                  <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-1 text-center">
+                    {service.serviceHeading}
+                  </h3>
+                  <p className="text-xs md:text-sm text-gray-600 mb-6 text-center">
+                    {service.serviceDescription}
+                  </p>
+
+                  {/* Features */}
+                  <ul className="w-full space-y-2 mb-6">
                     {service.serviceContent.map((item: any) => (
-                      <div
+                      <li
                         key={item.contentId}
-                        className="flex items-center justify-center space-x-3"
+                        className="flex items-center justify-center text-gray-800 text-center"
                       >
-                        <CheckCircle className="h-6 w-6 text-emerald-500" />
-                        <span className="text-base text-gray-800">
-                          {item.key} {item.value || item.value}
+                        <CheckCircle className="h-4 w-4 text-emerald-500 mr-2" />
+                        <span>
+                          {item.key}: <span className="font-medium">{item.value}</span>
                         </span>
-                      </div>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
+                  {/* CTA */}
+                  <button
+                    onClick={() => (window.location.href = `/services/${slugify(service.serviceHeading)}`)}
+                    className="mt-auto w-full py-2 rounded-md bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 rounded-full hover:from-blue-700 hover:to-blue-500 font-medium"
+                  >
+                    View More
+                  </button>
                 </div>
               ))}
             </div>
@@ -142,7 +140,9 @@ const Home: React.FC = () => {
           {!loading && !error && (
             <div className="text-center mt-12">
               <button
-                onClick={() => {/* handle pagination or navigate to full list */}}
+                onClick={() => {
+                  window.location.href = '/services';
+                }}
                 className="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 rounded-full hover:from-blue-700 hover:to-blue-500 transition"
               >
                 View More Services
@@ -199,7 +199,7 @@ const Home: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
           {[
             {
-              icon: <CheckCircle className="h-7 w-7 text-emerald-500" />, 
+              icon: <CheckCircle className="h-7 w-7 text-emerald-500" />,
               title: '100% Safe & Secure',
               desc: 'Our methods comply with all platform guidelines and terms of service. Your account safety is our top priority.',
             },
@@ -266,7 +266,7 @@ const Home: React.FC = () => {
           >
             <a
               href="/services"
-              className="inline-block rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-4 text-m font-medium text-white shadow hover:from-blue-700 hover:to-indigo-700"
+              className="inline-block rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-4 text-m font-medium text-white shadow hover:from-blue-700 hover:to-blue-700"
             >
               Get Started
             </a>

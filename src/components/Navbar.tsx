@@ -9,17 +9,19 @@ import { motion, AnimatePresence } from 'framer-motion';
  * --------------------------------------------------
  * – Admin logic removed
  * – Links: Services | About Us | Contact | Learn More
- * – Auth controls: Profile icon (when authenticated) + Logout | Sign In button
+ * – Auth controls: Profile icon with tooltip showing user name | Logout | Sign In button
  * – Mobile drawer mirrors desktop links
  */
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
 
   // Close drawer on route change
-  useEffect(() => setIsOpen(false), [location]);
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location]);
 
   const handleLogout = () => {
     logout();
@@ -37,12 +39,11 @@ const Navbar: React.FC = () => {
       <div className="w-full border-b border-white/20 bg-white/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center py-4 md:py-5">
           {/* Brand */}
-          <Link
-            to="/"
-            className="flex items-center gap-3 group hover:scale-105 transition-transform"
-          >
-            <Globe className="h-10 w-10 text-blue-600  drop-shadow-xl " />
-            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-3xl font-bold text-transparent ">EngageSphere</span>
+          <Link to="/" className="flex items-center gap-3 group hover:scale-105 transition-transform">
+            <Globe className="h-10 w-10 text-blue-600 drop-shadow-xl" />
+            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-3xl font-bold text-transparent">
+              EngageSphere
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -51,7 +52,7 @@ const Navbar: React.FC = () => {
               Services
             </Link>
             <Link to="/about" className="text-xl font-semibold hover:text-blue-600">
-              About Us
+              About Us
             </Link>
             <Link to="/contact" className="text-xl font-semibold hover:text-blue-600">
               Contact Us
@@ -62,6 +63,7 @@ const Navbar: React.FC = () => {
               <button
                 onClick={handleProfileClick}
                 className="hover:text-blue-600"
+                title={user?.name ?? 'Profile'}
               >
                 <User className="w-6 h-6" />
               </button>
@@ -78,7 +80,7 @@ const Navbar: React.FC = () => {
                   to="/login"
                   className="bg-blue-600 text-white text-lg px-7 py-3 rounded-full font-semibold hover:shadow-lg transition-all"
                 >
-                  Sign In
+                  Sign In
                 </Link>
               )}
             </div>
@@ -106,25 +108,24 @@ const Navbar: React.FC = () => {
             className="fixed top-0 left-0 w-full h-full bg-white/70 backdrop-blur-lg z-50 p-8 flex flex-col space-y-8 text-black font-lexend"
           >
             {/* Drawer header */}
-            <Link
-            to="/"
-            className="flex items-center gap-3 group hover:scale-105 transition-transform"
-          >
-            <Globe className="h-10 w-10 text-black drop-shadow-xl" />
-            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-3xl font-bold text-transparent ">EngageSphere</span>
-          </Link>
+            <Link to="/" className="flex items-center gap-3 group hover:scale-105 transition-transform">
+              <Globe className="h-10 w-10 text-black drop-shadow-xl" />
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-3xl font-bold text-transparent">
+                EngageSphere
+              </span>
+            </Link>
 
             <Link to="/services" className="text-2xl font-semibold" onClick={() => setIsOpen(false)}>
               Services
             </Link>
             <Link to="/about" className="text-2xl font-semibold" onClick={() => setIsOpen(false)}>
-              About Us
+              About Us
             </Link>
             <Link to="/contact" className="text-2xl font-semibold" onClick={() => setIsOpen(false)}>
               Contact
             </Link>
             <Link to="/learn-more" className="text-2xl font-semibold" onClick={() => setIsOpen(false)}>
-              Learn More
+              Learn More
             </Link>
 
             <div className="flex flex-col gap-6 mt-auto">
@@ -133,7 +134,8 @@ const Navbar: React.FC = () => {
                   handleProfileClick();
                   setIsOpen(false);
                 }}
-                className="flex items-center gap-3 text-2xl"
+                className="flex items-center gap-3 text-2xl hover:text-blue-600"
+                title={user?.name ?? 'Profile'}
               >
                 <User className="w-6 h-6" /> Profile
               </button>
@@ -154,7 +156,7 @@ const Navbar: React.FC = () => {
                   onClick={() => setIsOpen(false)}
                   className="text-2xl bg-blue-600 px-6 py-3 rounded-full text-white text-center"
                 >
-                  Sign In
+                  Sign In
                 </Link>
               )}
             </div>

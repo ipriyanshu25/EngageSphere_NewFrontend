@@ -1,44 +1,152 @@
-// src/pages/Profile.tsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Edit2, LogOut, Mail, Phone, MapPin, Calendar } from 'lucide-react';
+import {
+  User as UserIcon,
+  Edit2,
+  LogOut,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar
+} from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import axios from '../api/axios';
+import { AxiosError } from 'axios';
 
+/* ------------------------------------------------------------------ */
+/* Types                                                               */
+/* ------------------------------------------------------------------ */
+interface ProfileData {
+  userId    : string;
+  name      : string;
+  email     : string;
+  phone     : string;
+  address   : string;
+  createdAt : string;
+  updatedAt?: string;
+}
+
+/* Response envelope: { data: { …profile } } */
+interface GetByIdResponse {
+  data: ProfileData;
+}
+
+/* ------------------------------------------------------------------ */
+/* Component                                                           */
+/* ------------------------------------------------------------------ */
 const Profile: React.FC = () => {
-  const { user, isAuthenticated, logout, loading } = useAuth();
+  const {
+    user,
+    token,
+    isAuthenticated,
+    logout,
+    loading: authLoading,
+  } = useAuth();
+
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState<string | null>(null);
+
   const navigate = useNavigate();
 
-  // Redirect if not logged in
+  /* -------------------------------------------------------------- */
+  /* 1. Redirect unauthenticated users once auth state resolved     */
+  /* -------------------------------------------------------------- */
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    if (!authLoading && !isAuthenticated) {
       navigate('/login', { replace: true });
     }
-  }, [loading, isAuthenticated, navigate]);
+  }, [authLoading, isAuthenticated, navigate]);
 
-  if (loading || !user) {
+  /* -------------------------------------------------------------- */
+  /* 2. Fetch profile once authenticated                            */
+  /* -------------------------------------------------------------- */
+  useEffect(() => {
+    if (authLoading || !isAuthenticated || !token || !user?.id) return;
+
+    (async () => {
+      try {
+        const { data } = await axios.post<GetByIdResponse>(
+          '/user/getById',
+          { userId: user.id },                               // body
+          { headers: { Authorization: `Bearer ${token}` } } // config
+        );
+
+        setProfile(data.data); // <‑— unwrap `data`
+      } catch (err) {
+        const axiosErr = err as AxiosError<any>;
+
+        if (axiosErr.response?.status === 401 || axiosErr.response?.status === 403) {
+          logout();
+          navigate('/login', { replace: true });
+          return;
+        }
+
+        setError(axiosErr.response?.data?.message || axiosErr.message);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [authLoading, isAuthenticated, token, user, logout, navigate]);
+
+  /* -------------------------------------------------------------- */
+  /* 3.  LOADING / ERROR STATES                                     */
+  /* -------------------------------------------------------------- */
+  if (authLoading || loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-indigo-600 border-gray-300"></div>
+      <div className="flex items-center justify-center h-screen bg-blue-100">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-indigo-600 border-gray-300" />
       </div>
     );
   }
 
-  const joinedDate = new Date(user.createdAt).toLocaleDateString('en-US', {
-    year: 'numeric',
+  if (error || !profile) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-red-50 p-4">
+        <p className="text-red-600 mb-4">{error || 'Could not load profile.'}</p>
+        <button
+          onClick={() => navigate('/')}
+          className="px-4 py-2 bg-indigo-600 text-white rounded-lg"
+        >
+          Back to Home
+        </button>
+      </div>
+    );
+  }
+
+  /* -------------------------------------------------------------- */
+  /* 4.  MAIN PROFILE VIEW                                          */
+  /* -------------------------------------------------------------- */
+  const joinedDate  = new Date(profile.createdAt).toLocaleDateString('en-US', {
+    year : 'numeric',
     month: 'long',
-    day: 'numeric'
+    day  : 'numeric',
   });
 
+  const updatedDate = profile.updatedAt
+    ? new Date(profile.updatedAt).toLocaleDateString('en-US', {
+        year : 'numeric',
+        month: 'short',
+        day  : 'numeric',
+      })
+    : null;
+
+  /* Static colour map to satisfy Tailwind’s JIT compiler  */
+  const colourMap: Record<string, string> = {
+    indigo: 'indigo',
+    green : 'green',
+    red   : 'red',
+    purple: 'purple',
+    gray  : 'gray',
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div className="min-h-screen bg-blue-100 flex items-center justify-center p-4">
+      <div className="max-w-lg w-full bg-white rounded-2xl shadow-xl overflow-hidden">
         {/* Banner */}
-        <div className="h-32 bg-gradient-to-r from-indigo-600 to-blue-500 relative">
+        <div className="h-40 bg-gradient-to-r from-indigo-600 to-blue-500 relative">
           <button
-            onClick={() => {
-              logout();
-              navigate('/', { replace: true });
-            }}
+            onClick={() => { logout(); navigate('/', { replace: true }); }}
             className="absolute top-4 right-4 text-white hover:text-gray-200 transition"
             title="Logout"
           >
@@ -47,55 +155,47 @@ const Profile: React.FC = () => {
         </div>
 
         {/* Avatar & Name */}
-        <div className="relative -mt-12 flex justify-center">
+        <div className="relative -mt-16 flex justify-center">
           <div className="bg-white rounded-full p-1 shadow-md">
-            <div className="bg-gradient-to-tr from-blue-400 to-indigo-600 rounded-full p-4">
-              <User className="w-12 h-12 text-white" />
+            <div className="bg-gradient-to-tr from-blue-400 to-indigo-600 rounded-full p-5">
+              <UserIcon className="w-14 h-14 text-white" />
             </div>
           </div>
         </div>
-        <div className="text-center mt-2 mb-6 px-6">
-          <h1 className="text-2xl font-semibold text-gray-800">{user.name}</h1>
-          <p className="text-gray-500">{user.email}</p>
+        <div className="text-center mt-4 mb-8 px-6">
+          <h1 className="text-3xl font-semibold text-gray-800">{profile.name}</h1>
+          <p className="text-indigo-500 font-medium">{profile.email}</p>
+          {updatedDate && (
+            <p className="text-xs text-gray-400 mt-1">Last updated · {updatedDate}</p>
+          )}
         </div>
 
-        {/* Details */}
-        <div className="px-6 space-y-4 pb-6">
-          <div className="flex items-center space-x-4 bg-gray-100 rounded-lg p-4">
-            <Mail className="w-5 h-5 text-indigo-500" />
-            <div>
-              <p className="text-gray-700 font-medium">Email</p>
-              <p className="text-gray-600 text-sm">{user.email}</p>
+        {/* Detail cards */}
+        <div className="px-6 space-y-5 pb-6">
+          {[
+            { icon: Mail,     title: 'Email',   value: profile.email,                      color: 'indigo' },
+            { icon: Phone,    title: 'Phone',   value: profile.phone   || 'Not provided', color: 'green'  },
+            { icon: MapPin,   title: 'Address', value: profile.address || 'Not provided', color: 'red'    },
+            { icon: Calendar, title: 'Joined',  value: joinedDate,                         color: 'purple' },
+          ].map(({ icon: Icon, title, value, color }) => (
+            <div
+              key={title}
+              className={`flex items-center space-x-4 bg-${colourMap[color]}-50 rounded-lg p-4`}
+            >
+              <Icon className={`w-6 h-6 text-${colourMap[color]}-500`} />
+              <div>
+                <p className={`text-${colourMap[color]}-600 font-medium`}>{title}</p>
+                <p className="text-gray-600 text-sm break-all">{value}</p>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center space-x-4 bg-gray-100 rounded-lg p-4">
-            <Phone className="w-5 h-5 text-green-500" />
-            <div>
-              <p className="text-gray-700 font-medium">Phone</p>
-              <p className="text-gray-600 text-sm">{user.phone}</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-4 bg-gray-100 rounded-lg p-4">
-            <MapPin className="w-5 h-5 text-red-500" />
-            <div>
-              <p className="text-gray-700 font-medium">Address</p>
-              <p className="text-gray-600 text-sm">{user.address}</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-4 bg-gray-100 rounded-lg p-4">
-            <Calendar className="w-5 h-5 text-purple-500" />
-            <div>
-              <p className="text-gray-700 font-medium">Joined</p>
-              <p className="text-gray-600 text-sm">{joinedDate}</p>
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* Actions */}
         <div className="px-6 pb-6 flex space-x-3">
           <button
             onClick={() => navigate('/update')}
-            className="flex-1 flex items-center justify-center space-x-2 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+            className="flex-1 flex items-center justify-center space-x-2 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
           >
             <Edit2 className="w-5 h-5" />
             <span>Edit Profile</span>
@@ -107,123 +207,3 @@ const Profile: React.FC = () => {
 };
 
 export default Profile;
-
-
-
-
-// import React, { useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import {
-//   User,
-//   Edit2,
-//   Mail,
-//   Phone,
-//   MapPin,
-//   Calendar,
-//   Home
-// } from 'lucide-react';
-// import { useAuth } from '../contexts/AuthContext';
-
-// const Profile: React.FC = () => {
-//   const { user, isAuthenticated, loading } = useAuth();
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     if (!loading && !isAuthenticated) {
-//       navigate('/login', { replace: true });
-//     }
-//   }, [loading, isAuthenticated, navigate]);
-
-//   if (loading || !user) {
-//     return (
-//       <div className="flex items-center justify-center h-screen bg-gray-100">
-//         <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-indigo-600 border-gray-300"></div>
-//       </div>
-//     );
-//   }
-
-//   const joinedDate = new Date(user.createdAt).toLocaleDateString('en-US', {
-//     year: 'numeric',
-//     month: 'long',
-//     day: 'numeric'
-//   });
-
-//   return (
-//     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-//       <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
-
-//         {/* Banner */}
-//         <div className="h-32 bg-gradient-to-r from-indigo-600 to-blue-600 relative" />
-
-//         {/* Avatar */}
-//         <div className="relative -mt-12 flex justify-center">
-//           <div className="bg-white rounded-full p-2 shadow-md">
-//             <div className="bg-gradient-to-tr from-blue-500 to-indigo-700 rounded-full p-4">
-//               <User className="w-12 h-12 text-white" />
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* User Name & Email */}
-//         <div className="text-center mt-3 mb-6 px-6">
-//           <h1 className="text-2xl font-bold text-gray-800">{user.name}</h1>
-//           <p className="text-gray-500">{user.email}</p>
-//         </div>
-
-//         {/* Info Cards */}
-//         <div className="px-6 space-y-4 pb-6">
-//           {[
-//             {
-//               label: 'Email',
-//               value: user.email,
-//               icon: <Mail className="w-5 h-5 text-indigo-500" />
-//             },
-//             {
-//               label: 'Phone',
-//               value: user.phone,
-//               icon: <Phone className="w-5 h-5 text-green-500" />
-//             },
-//             {
-//               label: 'Address',
-//               value: user.address,
-//               icon: <MapPin className="w-5 h-5 text-red-500" />
-//             },
-//             {
-//               label: 'Joined',
-//               value: joinedDate,
-//               icon: <Calendar className="w-5 h-5 text-purple-500" />
-//             }
-//           ].map((item, index) => (
-//             <div key={index} className="flex items-center space-x-4 bg-gray-100 rounded-xl p-4">
-//               {item.icon}
-//               <div>
-//                 <p className="text-gray-700 font-medium">{item.label}</p>
-//                 <p className="text-gray-600 text-sm">{item.value}</p>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-
-//         {/* Actions */}
-//         <div className="px-6 pb-6 flex space-x-4">
-//           <button
-//             onClick={() => navigate('/update')}
-//             className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition flex items-center justify-center space-x-2"
-//           >
-//             <Edit2 className="w-5 h-5" />
-//             <span>Edit Profile</span>
-//           </button>
-//           <button
-//             onClick={() => navigate('/')}
-//             className="flex-1 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition flex items-center justify-center space-x-2"
-//           >
-//             <Home className="w-5 h-5" />
-//             <span>Go to Home</span>
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Profile;

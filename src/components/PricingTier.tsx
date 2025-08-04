@@ -1,353 +1,166 @@
-
-// import React, { useState } from 'react';
-// import { Check } from 'lucide-react';
-// import GlassContainer from './GlassContainer';
-// import PaymentModal from './PaymentModal';
-// import Receipt from './Receipt';
-
-// interface PricingTierProps {
-//   name: string;
-//   price: string;
-//   description: string;
-//   features: string[];
-//   isPopular?: boolean;
-//   platform?: string;
-// }
-
-// const PricingTier: React.FC<PricingTierProps> = ({
-//   name,
-//   price,
-//   description,
-//   features,
-//   isPopular = false,
-//   platform = 'Social Media'
-// }) => {
-//   const [showPaymentModal, setShowPaymentModal] = useState(false);
-//   const [showReceipt, setShowReceipt] = useState(false);
-//   const [paymentDetails, setPaymentDetails] = useState<any>(null);
-
-//   const handleOrderNow = () => {
-//     setShowPaymentModal(true);
-//   };
-
-//   const handlePaymentSuccess = (details: any) => {
-//     setPaymentDetails(details);
-//     setShowPaymentModal(false);
-//     setShowReceipt(true);
-//   };
-
-//   const handleCloseReceipt = () => {
-//     setShowReceipt(false);
-//     setPaymentDetails(null);
-//   };
-
-//   return (
-//     <>
-//       <GlassContainer
-//         className={`
-//           h-full transition-transform duration-300 hover:-translate-y-1
-//           bg-gradient-to-br from-[#1a2a6c] to-[#4b6cb7] backdrop-blur-sm bg-opacity-60
-//           text-white rounded-2xl shadow-lg border border-blue-300 relative
-//         `}
-//       >
-//         {isPopular && (
-//           <div className="bg-yellow-400 text-gray-900 text-sm font-semibold px-3 py-1 rounded-full absolute -top-3 left-1/2 transform -translate-x-1/2 shadow-md">
-//             Most Popular
-//           </div>
-//         )}
-
-//         <div className="p-6 md:p-8">
-//           <div className="text-center mb-6">
-//             <h3 className="text-2xl font-extrabold mb-2 tracking-wide">{name}</h3>
-//             <div className="text-4xl font-bold mb-2 text-yellow-300">{price}</div>
-//             <p className="text-slate-200">{description}</p>
-//           </div>
-
-//           <ul className="space-y-3 mb-6">
-//             {features.map((feature, index) => (
-//               <li key={index} className="flex items-start">
-//                 <Check className="h-5 w-5 text-yellow-300 mr-2 flex-shrink-0 mt-0.5" />
-//                 <span className="text-slate-100">{feature}</span>
-//               </li>
-//             ))}
-//           </ul>
-
-//           <button
-//             onClick={handleOrderNow}
-//             className={`
-//               w-full py-3 rounded-lg font-semibold transition-all
-//               bg-yellow-400 text-gray-900 hover:bg-yellow-500 shadow-md hover:shadow-lg
-//             `}
-//           >
-//             Order Now
-//           </button>
-//         </div>
-//       </GlassContainer>
-
-//       <PaymentModal
-//         isOpen={showPaymentModal}
-//         onClose={() => setShowPaymentModal(false)}
-//         packageData={{
-//           name,
-//           price,
-//           features,
-//           platform
-//         }}
-//         onPaymentSuccess={handlePaymentSuccess}
-//       />
-
-//       {showReceipt && paymentDetails && (
-//         <Receipt
-//           paymentDetails={paymentDetails}
-//           onClose={handleCloseReceipt}
-//         />
-//       )}
-//     </>
-//   );
-// };
-
-// export default PricingTier;
-
-
-
-
-
-
-
-
-
-// // src/components/PricingTier.tsx
-// import React, { useState } from 'react';
-// import { Check } from 'lucide-react';
-// import { Link } from 'react-router-dom';
-// import GlassContainer from './GlassContainer';
-// import PaymentModal from './PaymentModal';
-// import Receipt from './Receipt';
-
-// interface PricingTierProps {
-//   name: string;
-//   price: string;
-//   description: string;
-//   features: string[];
-//   isPopular?: boolean;
-//   platform?: string;
-//   isBusiness?: boolean;
-// }
-
-// const PricingTier: React.FC<PricingTierProps> = ({
-//   name,
-//   price,
-//   description,
-//   features,
-//   isPopular = false,
-//   platform = 'Social Media',
-//   isBusiness = false
-// }) => {
-//   const [showPaymentModal, setShowPaymentModal] = useState(false);
-//   const [showReceipt, setShowReceipt] = useState(false);
-//   const [paymentDetails, setPaymentDetails] = useState<any>(null);
-
-//   const handleOrderNow = () => {
-//     setShowPaymentModal(true);
-//   };
-
-//   const handlePaymentSuccess = (details: any) => {
-//     setPaymentDetails(details);
-//     setShowPaymentModal(false);
-//     setShowReceipt(true);
-//   };
-
-//   const handleCloseReceipt = () => {
-//     setShowReceipt(false);
-//     setPaymentDetails(null);
-//   };
-
-//   return (
-//     <>
-//       <GlassContainer
-//         className={`
-//           h-full transition-transform duration-300 hover:-translate-y-1
-//           bg-gradient-to-br from-[#1a2a6c] to-[#4b6cb7] backdrop-blur-sm bg-opacity-60
-//           text-white rounded-2xl shadow-lg border border-blue-300 relative
-//         `}
-//       >
-//         {isPopular && (
-//           <div className="bg-yellow-400 text-gray-900 text-sm font-semibold px-3 py-1 rounded-full absolute -top-3 left-1/2 transform -translate-x-1/2 shadow-md">
-//             Most Popular
-//           </div>
-//         )}
-
-//         <div className="p-6 md:p-8">
-//           <div className="text-center mb-6">
-//             <h3 className="text-2xl font-extrabold mb-2 tracking-wide">{name}</h3>
-//             <div className="text-4xl font-bold mb-2 text-yellow-300">{price}</div>
-//             <p className="text-slate-200">{description}</p>
-//           </div>
-
-//           <ul className="space-y-3 mb-6">
-//             {features.map((feature, index) => (
-//               <li key={index} className="flex items-start">
-//                 <Check className="h-5 w-5 text-yellow-300 mr-2 flex-shrink-0 mt-0.5" />
-//                 <span className="text-slate-100">{feature}</span>
-//               </li>
-//             ))}
-//           </ul>
-
-//           {isBusiness ? (
-//             <Link
-//               to="/contact"
-//               className="w-full block text-center py-3 rounded-lg font-semibold transition-all bg-yellow-500 text-gray-900 hover:bg-yellow-600 shadow-md hover:shadow-lg"
-//             >
-//               Contact Us
-//             </Link>
-//           ) : (
-//             <button
-//               onClick={handleOrderNow}
-//               className="w-full py-3 rounded-lg font-semibold transition-all bg-yellow-400 text-gray-900 hover:bg-yellow-500 shadow-md hover:shadow-lg"
-//             >
-//               Order Now
-//             </button>
-//           )}
-//         </div>
-//       </GlassContainer>
-
-//       {!isBusiness && (
-//         <>
-//           <PaymentModal
-//             isOpen={showPaymentModal}
-//             onClose={() => setShowPaymentModal(false)}
-//             packageData={{ name, price, features, platform }}
-//             onPaymentSuccess={handlePaymentSuccess}
-//           />
-
-//           {showReceipt && paymentDetails && (
-//             <Receipt paymentDetails={paymentDetails} onClose={handleCloseReceipt} />
-//           )}
-//         </>
-//       )}
-//     </>
-//   );
-// };
-
-// export default PricingTier;
-
-
-
-
-
 import React, { useState } from 'react';
+import axios from '../api/axios';
 import { Check } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import GlassContainer from './GlassContainer';
-import PaymentModal from './PaymentModal';
-import Receipt from './Receipt';
 
 interface PricingTierProps {
+  planId: string;
+  pricingId: string;
   name: string;
   price: string;
+  durationLabel?: string;
+  footerText?: string;
   description: string;
   features: string[];
   isPopular?: boolean;
-  platform?: string;
-  isBusiness?: boolean;
+  currency?: string;
 }
 
+const RAZORPAY_KEY = 'rzp_test_2oIQzZ7i0uQ6sn';
+
 const PricingTier: React.FC<PricingTierProps> = ({
+  planId,
+  pricingId,
   name,
   price,
+  durationLabel,
+  footerText,
   description,
   features,
   isPopular = false,
-  platform = 'Social Media',
-  isBusiness = false,
+  currency = 'USD',
 }) => {
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [showReceipt, setShowReceipt] = useState(false);
-  const [paymentDetails, setPaymentDetails] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleOrderNow = () => {
-    setShowPaymentModal(true);
-  };
+  const loadRazorpay = () =>
+    new Promise<boolean>((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
 
-  const handlePaymentSuccess = (details: any) => {
-    setPaymentDetails(details);
-    setShowPaymentModal(false);
-    setShowReceipt(true);
-  };
+  const handleBuyNow = async () => {
+    if (loading) return;
+    setLoading(true);
 
-  const handleCloseReceipt = () => {
-    setShowReceipt(false);
-    setPaymentDetails(null);
+    try {
+      // 1. Fetch userId
+      const userId = localStorage.getItem('userId');
+      if (!userId) throw new Error('User not logged in');
+
+      // 2. Create order on your backend
+      const { data } = await axios.post('/payment/order', {
+        userId,
+        planId,
+        pricingId,
+        currency,
+        price
+      });
+      const { order } = data;
+
+      // 3. Load Razorpay SDK
+      const sdkLoaded = await loadRazorpay();
+      if (!sdkLoaded) throw new Error('Payment SDK failed to load');
+
+      // 4. Open checkout
+      new (window as any).Razorpay({
+        key: RAZORPAY_KEY,
+        amount: order.amount,
+        currency: order.currency,
+        name,
+        description,
+        order_id: order.id,
+        notes: {
+          planId,
+          pricingId,
+          userId,
+        },
+        theme: { color: '#7C3AED' },
+        handler: async (resp: {
+          razorpay_order_id: string;
+          razorpay_payment_id: string;
+          razorpay_signature: string;
+        }) => {
+          try {
+            // 5. Verify payment + metadata
+            await axios.post('/payment/verify', {
+              ...resp,
+              planId,
+              pricingId,
+              userId,
+            });
+            alert('🎉 Payment successful!');
+          } catch (verifyErr: any) {
+            console.error('Verification error:', verifyErr);
+            alert('⚠️ Payment verification failed');
+          }
+        },
+      }).open();
+    } catch (err: any) {
+      console.error('Payment error:', err);
+      alert(err.message || 'Payment failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <>
-      <GlassContainer
-        className={`
-          h-full transition-transform duration-300 hover:-translate-y-1
-          bg-gradient-to-br from-[#1a2a6c] to-[#4b6cb7] backdrop-blur-sm bg-opacity-60
-          text-white rounded-2xl shadow-lg border border-blue-300 relative
-        `}
-      >
-        {isPopular && (
-          <div className="bg-yellow-400 text-gray-900 text-sm font-semibold px-3 py-1 rounded-full absolute -top-3 left-1/2 transform -translate-x-1/2 shadow-md">
-            Most Popular
-          </div>
-        )}
-
-        <div className="p-6 md:p-8">
-          <div className="text-center mb-6">
-            <h3 className="text-2xl font-extrabold mb-2 tracking-wide">{name}</h3>
-            <div className="text-4xl font-bold mb-2 text-yellow-300">{price}</div>
-            <p className="text-slate-200">{description}</p>
-          </div>
-
-          <ul className="space-y-3 mb-6">
-            {features.map((feature, index) => (
-              <li key={index} className="flex items-start">
-                <Check className="h-5 w-5 text-yellow-300 mr-2 flex-shrink-0 mt-0.5" />
-                <span className="text-slate-100">{feature}</span>
-              </li>
-            ))}
-          </ul>
-
-          {isBusiness ? (
-            <Link
-              to="/contact"
-              className="w-full block text-center py-3 rounded-lg font-semibold transition-all bg-yellow-500 text-gray-900 hover:bg-yellow-600 shadow-md hover:shadow-lg"
-            >
-              Contact Us
-            </Link>
-          ) : (
-            <button
-              onClick={handleOrderNow}
-              className="w-full py-3 rounded-lg font-semibold transition-all bg-yellow-400 text-gray-900 hover:bg-yellow-500 shadow-md hover:shadow-lg"
-            >
-              Order Now
-            </button>
-          )}
+    <div
+      className={`relative bg-white border ${
+        isPopular ? 'border-blue-500 shadow-lg' : 'border-gray-200'
+      } rounded-2xl overflow-hidden flex flex-col`}
+    >
+      {isPopular && (
+        <div className="absolute inset-x-0 top-0 bg-blue-700 text-white text-center text-xs font-bold uppercase py-2 rounded-t-2xl">
+          Most Popular
         </div>
-      </GlassContainer>
-
-      {/* Modal + Receipt */}
-      {!isBusiness && (
-        <>
-          <PaymentModal
-            isOpen={showPaymentModal}
-            onClose={() => setShowPaymentModal(false)}
-            packageData={{ name, price, features, platform }}
-            onPaymentSuccess={handlePaymentSuccess}
-          />
-
-          {showReceipt && paymentDetails && (
-            <Receipt
-              paymentDetails={paymentDetails}
-              onClose={handleCloseReceipt}
-            />
-          )}
-        </>
       )}
-    </>
+      <div className="p-6 mt-4 flex-1 flex flex-col">
+        <h3 className="text-xl font-semibold text-center mb-2">{name}</h3>
+        <p className="text-center text-4xl font-extrabold text-gray-900">
+          {price}
+          <span className="text-lg font-medium text-gray-500">
+            /{durationLabel || 'mo'}
+          </span>
+        </p>
+        {durationLabel && (
+          <p className="text-center text-sm font-medium text-blue-600 mt-1">
+            {durationLabel}
+          </p>
+        )}
+        <p className="text-gray-600 text-center mt-3">{description}</p>
+
+        <button
+          onClick={handleBuyNow}
+          disabled={loading}
+          className={`mt-6 w-full py-3 font-semibold rounded-lg transition ${
+            isPopular
+              ? 'bg-blue-500 text-white hover:bg-blue-600'
+              : 'border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white'
+          }`}
+        >
+          {loading ? 'Processing…' : 'Choose plan'}
+        </button>
+
+        {footerText && (
+          <p className="text-xs text-gray-500 mt-4 text-center">
+            {footerText}
+          </p>
+        )}
+      </div>
+
+      <div className="border-t border-gray-200 px-6 py-4">
+        <ul className="space-y-2">
+          {features.map((feat, idx) => (
+            <li key={idx} className="flex items-start">
+              <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-1" />
+              <span className="ml-2 text-gray-700 text-sm">{feat}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 };
 
